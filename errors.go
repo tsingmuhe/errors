@@ -186,13 +186,15 @@ func Wrap(err error, message string) error {
 	if err == nil {
 		return nil
 	}
-	err = &withMessage{
-		cause: err,
-		msg:   message,
-	}
-	return &withStack{
+
+	err = &withStack{
 		err,
 		callers(),
+	}
+
+	return &withMessage{
+		cause: err,
+		msg:   message,
 	}
 }
 
@@ -203,13 +205,15 @@ func Wrapf(err error, format string, args ...interface{}) error {
 	if err == nil {
 		return nil
 	}
-	err = &withMessage{
-		cause: err,
-		msg:   fmt.Sprintf(format, args...),
-	}
-	return &withStack{
+	
+	err = &withStack{
 		err,
 		callers(),
+	}
+
+	return &withMessage{
+		cause: err,
+		msg:   fmt.Sprintf(format, args...),
 	}
 }
 
