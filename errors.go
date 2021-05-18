@@ -5,19 +5,19 @@ import (
 	"io"
 )
 
-type fundamental struct {
+type RuntimeException struct {
 	msg string
 	*stack
 	cause error
 }
 
-func (f *fundamental) Msg() string {
+func (f *RuntimeException) Msg() string {
 	return f.msg
 }
 
-func (f *fundamental) Cause() error { return f.cause }
+func (f *RuntimeException) Cause() error { return f.cause }
 
-func (f *fundamental) Error() string {
+func (f *RuntimeException) Error() string {
 	if f.cause == nil {
 		return f.msg
 	}
@@ -25,7 +25,7 @@ func (f *fundamental) Error() string {
 	return fmt.Sprintf("%s\nCaused by: %+v\n", f.msg, f.cause)
 }
 
-func (f *fundamental) Format(s fmt.State, verb rune) {
+func (f *RuntimeException) Format(s fmt.State, verb rune) {
 	io.WriteString(s, f.msg)
 	f.stack.Format(s, verb)
 	if f.cause != nil {
@@ -36,7 +36,7 @@ func (f *fundamental) Format(s fmt.State, verb rune) {
 // Error returns an error with the supplied message.
 // Error also records the stack trace at the point it was called.
 func Error(message string) error {
-	return &fundamental{
+	return &RuntimeException{
 		msg:   message,
 		stack: callers(),
 	}
@@ -46,7 +46,7 @@ func Error(message string) error {
 // as a value that satisfies error.
 // Errorf also records the stack trace at the point it was called.
 func Errorf(format string, args ...interface{}) error {
-	return &fundamental{
+	return &RuntimeException{
 		msg:   fmt.Sprintf(format, args...),
 		stack: callers(),
 	}
@@ -60,7 +60,7 @@ func Wrap(err error, message string) error {
 		return nil
 	}
 
-	return &fundamental{
+	return &RuntimeException{
 		msg:   message,
 		cause: err,
 		stack: callers(),
@@ -75,7 +75,7 @@ func Wrapf(err error, format string, args ...interface{}) error {
 		return nil
 	}
 
-	return &fundamental{
+	return &RuntimeException{
 		msg:   fmt.Sprintf(format, args...),
 		cause: err,
 		stack: callers(),
