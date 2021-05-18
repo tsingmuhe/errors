@@ -66,9 +66,12 @@ func (f Frame) Format(s fmt.State, verb rune) {
 	case 's':
 		switch {
 		case s.Flag('+'):
+			io.WriteString(s, "\tat ")
 			io.WriteString(s, f.name())
-			io.WriteString(s, "\n\t")
+			//io.WriteString(s, "\n\t")
+			io.WriteString(s, "(")
 			io.WriteString(s, f.file())
+			io.WriteString(s, ")")
 		default:
 			io.WriteString(s, path.Base(f.file()))
 		}
