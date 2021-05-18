@@ -63,7 +63,7 @@ func (f Frame) name() string {
 //    %+v   equivalent to %+s:%d
 func (f Frame) Format(s fmt.State, verb rune) {
 	switch verb {
-	case 's':
+	case 's', 'v':
 		switch {
 		case s.Flag('+'):
 			io.WriteString(s, "\tat ")
@@ -71,18 +71,16 @@ func (f Frame) Format(s fmt.State, verb rune) {
 			//io.WriteString(s, "\n\t")
 			io.WriteString(s, "(")
 			io.WriteString(s, f.file())
+			io.WriteString(s, ":")
+			io.WriteString(s, strconv.Itoa(f.line()))
+			io.WriteString(s, ")")
 		default:
 			io.WriteString(s, path.Base(f.file()))
 		}
 	case 'd':
 		io.WriteString(s, strconv.Itoa(f.line()))
-		io.WriteString(s, ")")
 	case 'n':
 		io.WriteString(s, funcname(f.name()))
-	case 'v':
-		f.Format(s, 's')
-		io.WriteString(s, ":")
-		f.Format(s, 'd')
 	}
 }
 
