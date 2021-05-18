@@ -11,33 +11,25 @@ type fundamental struct {
 	cause error
 }
 
-func (f *fundamental) Error() string {
-	if f.cause != nil {
-		return f.msg + ": " + f.cause.Error()
-	}
-
+func (f *fundamental) Msg() string {
 	return f.msg
 }
+
 func (f *fundamental) Cause() error { return f.cause }
 
-func (f *fundamental) Unwrap() error { return f.cause }
+func (f *fundamental) Error() string {
+	if f.cause == nil {
+		return f.msg
+	}
+
+	return fmt.Sprintf("%s\nCaused by: %+v\n", f.msg, f.cause)
+}
 
 func (f *fundamental) Format(s fmt.State, verb rune) {
-	switch verb {
-	case 'v':
-		if s.Flag('+') {
-			io.WriteString(s, f.msg)
-			f.stack.Format(s, verb)
-			if f.cause != nil {
-				fmt.Fprintf(s, "\nCaused by: %+v\n", f.cause)
-			}
-			return
-		}
-		fallthrough
-	case 's':
-		io.WriteString(s, f.Error())
-	case 'q':
-		fmt.Fprintf(s, "%q", f.msg)
+	io.WriteString(s, f.msg)
+	f.stack.Format(s, verb)
+	if f.cause != nil {
+		fmt.Fprintf(s, "\nCaused by: %+v\n", f.cause)
 	}
 }
 
