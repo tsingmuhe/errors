@@ -58,16 +58,6 @@ func (f Frame) Format(s fmt.State, verb rune) {
 	io.WriteString(s, ")")
 }
 
-// MarshalText formats a stacktrace Frame as a text string. The output is the
-// same as that of fmt.Sprintf("%+v", f), but without newlines or tabs.
-func (f Frame) MarshalText() ([]byte, error) {
-	name := f.name()
-	if name == "unknown" {
-		return []byte(name), nil
-	}
-	return []byte(fmt.Sprintf("%s %s:%d", name, f.file(), f.line())), nil
-}
-
 // stack represents a stack of program counters.
 type stack []uintptr
 
