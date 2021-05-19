@@ -52,11 +52,11 @@ func (f Frame) name() string {
 func (f Frame) Format(s fmt.State, verb rune) {
 	io.WriteString(s, "\tat ")
 	io.WriteString(s, funcname(f.name()))
-	io.WriteString(s, "(")
+	io.WriteString(s, "( ")
 	io.WriteString(s, f.file())
 	io.WriteString(s, ":")
 	io.WriteString(s, strconv.Itoa(f.line()))
-	io.WriteString(s, ")")
+	io.WriteString(s, " )")
 }
 
 // stack represents a stack of program counters.
