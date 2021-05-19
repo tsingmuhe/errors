@@ -5,6 +5,7 @@ import (
 	"io"
 	"runtime"
 	"strconv"
+	"strings"
 )
 
 // Frame represents a program counter inside a stack frame.
@@ -50,7 +51,7 @@ func (f Frame) name() string {
 // Format formats the frame according to the fmt.Formatter interface.
 func (f Frame) Format(s fmt.State, verb rune) {
 	io.WriteString(s, "\tat ")
-	io.WriteString(s, f.name())
+	io.WriteString(s, funcname(f.name()))
 	io.WriteString(s, "(")
 	io.WriteString(s, f.file())
 	io.WriteString(s, ":")
@@ -74,4 +75,11 @@ func callers() *stack {
 	n := runtime.Callers(3, pcs[:])
 	var st stack = pcs[0:n]
 	return &st
+}
+
+func funcname(name string) string {
+	i := strings.LastIndex(name, "/")
+	name = name[i+1:]
+	i = strings.Index(name, ".")
+	return name[i+1:]
 }
