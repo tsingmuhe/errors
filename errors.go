@@ -11,18 +11,10 @@ type RuntimeException struct {
 	cause error
 }
 
-func (f *RuntimeException) Msg() string {
-	return f.msg
-}
-
 func (f *RuntimeException) Cause() error { return f.cause }
 
 func (f *RuntimeException) Error() string {
-	if f.cause == nil {
-		return f.msg
-	}
-
-	return fmt.Sprintf("%s\nCaused by: %+v\n", f.msg, f.cause)
+	return f.msg
 }
 
 func (f *RuntimeException) Format(s fmt.State, verb rune) {
@@ -35,7 +27,7 @@ func (f *RuntimeException) Format(s fmt.State, verb rune) {
 
 // Error returns an error with the supplied message.
 // Error also records the stack trace at the point it was called.
-func Error(message string) *RuntimeException {
+func Error(message string) error {
 	return &RuntimeException{
 		msg:   message,
 		stack: callers(),
@@ -45,7 +37,7 @@ func Error(message string) *RuntimeException {
 // Errorf formats according to a format specifier and returns the string
 // as a value that satisfies error.
 // Errorf also records the stack trace at the point it was called.
-func Errorf(format string, args ...interface{}) *RuntimeException {
+func Errorf(format string, args ...interface{}) error {
 	return &RuntimeException{
 		msg:   fmt.Sprintf(format, args...),
 		stack: callers(),
@@ -55,7 +47,7 @@ func Errorf(format string, args ...interface{}) *RuntimeException {
 // Wrap returns an error annotating err with a stack trace
 // at the point Wrap is called, and the supplied message.
 // If err is nil, Wrap returns nil.
-func Wrap(err error, message string) *RuntimeException {
+func Wrap(err error, message string) error {
 	if err == nil {
 		return nil
 	}
@@ -70,7 +62,7 @@ func Wrap(err error, message string) *RuntimeException {
 // Wrapf returns an error annotating err with a stack trace
 // at the point Wrapf is called, and the format specifier.
 // If err is nil, Wrapf returns nil.
-func Wrapf(err error, format string, args ...interface{}) *RuntimeException {
+func Wrapf(err error, format string, args ...interface{}) error {
 	if err == nil {
 		return nil
 	}
